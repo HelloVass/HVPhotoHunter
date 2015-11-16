@@ -7,7 +7,7 @@
 - 拍照获取图片
 
 ## 截图
-<img src="device-2015-11-16-184918.png" width="320px"/>
+<img src="/screenshot/device-2015-11-16-184918.png" width="320px"/>
 
 ## 如何使用
 
@@ -20,9 +20,9 @@ mHVGalleryHunter = new HVGalleryHunter(this);
 
 // 设置 OnChooseGalleryListener
 dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
-@Override public void chooseGallery() {
-mHVGalleryHunter.openGallery();
-}
+    @Override public void chooseGallery() {
+        mHVGalleryHunter.openGallery();
+    }
 });
 ```
 
@@ -36,8 +36,8 @@ mHVGalleryHunter.openGallery();
 mCameraHunter = new HVCameraHunter(this);
 dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
 @Override public void chooseGallery() {
-mHVGalleryHunter.openGallery();
-}
+    mHVGalleryHunter.openGallery();
+    }
 });
 ```
 
@@ -56,28 +56,28 @@ mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.C
 }
 
 @Override public void onCaptureSucceed(File imageFile) {
-Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+    Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+    Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
 }
 
 @Override public void onCanceled(File imageFile) {
-Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
-}
+    Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
+    }
 });
 
 mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
-new HVGalleryHunter.Callback() {
+    new HVGalleryHunter.Callback() {
 @Override public void onCapturePhotoFailed(Exception error) {
 
 }
 
 @Override public void onCaptureSucceed(File imageFile) {
-Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+    Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+    Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
 }
 
 @Override public void onCanceled() {
-Log.i(TAG, "HVGalleryHunter onCanceled -->>");
+    Log.i(TAG, "HVGalleryHunter onCanceled -->>");
 }
 });
 }
