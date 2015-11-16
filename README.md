@@ -7,7 +7,7 @@
 - 拍照获取图片
 
 ## 截图
-![Alt text](./device-2015-11-16-184918.png)
+<img src="device-2015-11-16-184918.png" width="320px"/>
 
 ## 如何使用
 
@@ -31,7 +31,7 @@ mHVGalleryHunter.openGallery();
 
 ### 拍照
 
-```
+```java
 // 构建 HVCameraHunter 的实例
 mCameraHunter = new HVCameraHunter(this);
 dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
@@ -44,7 +44,7 @@ mHVGalleryHunter.openGallery();
 
 ### 获得图片 File
 
-```
+```java
 // 在 onActivityResult 方法中得到 File
 @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 super.onActivityResult(requestCode, resultCode, data);
