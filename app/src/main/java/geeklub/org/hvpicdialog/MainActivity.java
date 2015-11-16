@@ -1,10 +1,12 @@
 package geeklub.org.hvpicdialog;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import geeklub.org.library.HVCameraHunter;
 import geeklub.org.library.HVChosePicDialog;
 import geeklub.org.library.HVGalleryHunter;
@@ -18,12 +20,16 @@ public class MainActivity extends AppCompatActivity {
 
   private HVGalleryHunter mHVGalleryHunter;
 
+  private ImageView mPhotoImageView;
+
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
     mCameraHunter = new HVCameraHunter(this);
     mHVGalleryHunter = new HVGalleryHunter(this);
+
+    mPhotoImageView = (ImageView) findViewById(R.id.iv_photo);
 
     findViewById(R.id.btn_show_dialog).setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
@@ -55,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
       @Override public void onCaptureSucceed(File imageFile) {
         Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+        Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
       }
 
       @Override public void onCanceled(File imageFile) {
@@ -68,8 +75,9 @@ public class MainActivity extends AppCompatActivity {
 
           }
 
-          @Override public void onCaptureSucceed(File path) {
-            Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + path.getAbsolutePath());
+          @Override public void onCaptureSucceed(File imageFile) {
+            Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+            Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
           }
 
           @Override public void onCanceled() {

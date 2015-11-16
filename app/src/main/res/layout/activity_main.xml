@@ -9,9 +9,22 @@
   android:paddingTop="@dimen/activity_vertical_margin"
   tools:context=".MainActivity">
 
+
+  <ImageView
+    android:id="@+id/iv_photo"
+    android:layout_width="match_parent"
+    android:layout_height="400dp"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:scaleType="centerCrop" />
+
   <Button
     android:id="@+id/btn_show_dialog"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_below="@+id/iv_photo"
+    android:layout_centerHorizontal="true"
+    android:background="@null"
     android:text="show dialog" />
 </RelativeLayout>
