@@ -14,7 +14,7 @@
 ### 打开相册
 
 
-```
+```java
 // 构建 HVGalleryHunter 的实例
 mHVGalleryHunter = new HVGalleryHunter(this);
 
@@ -33,6 +33,7 @@ dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener()
 ```java
 // 构建 HVCameraHunter 的实例
 mCameraHunter = new HVCameraHunter(this);
+
 dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
           @Override public void chooseCamera() {
             mCameraHunter.openCamera();
@@ -48,6 +49,7 @@ dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
 @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
+    // 捕获拍照的结果
     mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
 
       @Override public void onCapturePhotoFailed(Exception e) {
@@ -63,7 +65,7 @@ dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
         Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
       }
     });
-
+    // 捕获相册返回的结果
     mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
         new HVGalleryHunter.Callback() {
           @Override public void onCapturePhotoFailed(Exception error) {
