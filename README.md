@@ -18,12 +18,11 @@
 // 构建 HVGalleryHunter 的实例
 mHVGalleryHunter = new HVGalleryHunter(this);
 
-// 设置 OnChooseGalleryListener
 dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
-    @Override public void chooseGallery() {
-        mHVGalleryHunter.openGallery();
-    }
-});
+          @Override public void chooseGallery() {
+            mHVGalleryHunter.openGallery();
+          }
+        });
 ```
 
 
@@ -34,11 +33,11 @@ dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener()
 ```java
 // 构建 HVCameraHunter 的实例
 mCameraHunter = new HVCameraHunter(this);
-dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
-@Override public void chooseGallery() {
-    mHVGalleryHunter.openGallery();
-    }
-});
+dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
+          @Override public void chooseCamera() {
+            mCameraHunter.openCamera();
+          }
+        });
 ```
 
 
@@ -47,44 +46,43 @@ dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener()
 ```java
 // 在 onActivityResult 方法中得到 File
 @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-super.onActivityResult(requestCode, resultCode, data);
+    super.onActivityResult(requestCode, resultCode, data);
 
-mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
+    mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
 
-@Override public void onCapturePhotoFailed(Exception e) {
+      @Override public void onCapturePhotoFailed(Exception e) {
 
-}
+      }
 
-@Override public void onCaptureSucceed(File imageFile) {
-    Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-    Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
-}
+      @Override public void onCaptureSucceed(File imageFile) {
+        Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+        Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+      }
 
-@Override public void onCanceled(File imageFile) {
-    Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
-    }
-});
+      @Override public void onCanceled(File imageFile) {
+        Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
+      }
+    });
 
-mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
-    new HVGalleryHunter.Callback() {
-@Override public void onCapturePhotoFailed(Exception error) {
+    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
+        new HVGalleryHunter.Callback() {
+          @Override public void onCapturePhotoFailed(Exception error) {
 
-}
+          }
 
-@Override public void onCaptureSucceed(File imageFile) {
-    Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-    Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
-}
+          @Override public void onCaptureSucceed(File imageFile) {
+            Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+            Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+          }
 
-@Override public void onCanceled() {
-    Log.i(TAG, "HVGalleryHunter onCanceled -->>");
-}
-});
-}
+          @Override public void onCanceled() {
+            Log.i(TAG, "HVGalleryHunter onCanceled -->>");
+          }
+        });
+  }
 
 
 ```
-
 
 
 
