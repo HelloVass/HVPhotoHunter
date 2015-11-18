@@ -55,6 +55,8 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
       case REQUEST_CAPTURE_PHOTO_FROM_GALLERY:
         mCallback = callback;
         if (resultCode == Activity.RESULT_OK && data != null) {
+          Log.i(TAG, "data -->>" + data.toString());
+          Log.i(TAG, "data.getData() -->>" + data.getData().toString());
           parsePhotoUri(data.getData());
         } else if (resultCode == Activity.RESULT_CANCELED) {
           mCallback.onCanceled();
@@ -75,7 +77,7 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
 
   @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     Log.i(TAG, "onCreateLoader -->>");
-    String[] projections = { MediaStore.MediaColumns.DATA };
+    String[] projections = { MediaStore.Images.Media.DATA };
     Uri imageUri = args.getParcelable(EXTRAS_GALLERY_SELECTED_PHOTO_URI);
     return new CursorLoader(mContext, imageUri, projections, null, null, null);
   }
@@ -83,7 +85,7 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
   @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
     Log.i(TAG, "onLoadFinished -->>");
     if (cursor != null) {
-      int imagePathColumnIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
+      int imagePathColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
       cursor.moveToFirst();
       File filePath = new File(cursor.getString(imagePathColumnIndex));
       mCallback.onCaptureSucceed(filePath);
@@ -99,8 +101,7 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
   }
 
   private Intent createGalleryIntent() {
-    Intent intent =
-        new Intent(Intent.ACTION_GET_CONTENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    Intent intent = new Intent(Intent.ACTION_PICK);
     intent.setType("image/*");
     return intent;
   }
