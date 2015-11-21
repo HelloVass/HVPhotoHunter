@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     findViewById(R.id.btn_show_dialog).setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
         HVChosePicDialog dialog = new HVChosePicDialog();
+
         dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
           @Override public void chooseCamera() {
             mCameraHunter.openCamera();

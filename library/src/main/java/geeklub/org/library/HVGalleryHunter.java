@@ -44,11 +44,21 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     this.mContext = context;
   }
 
+  /**
+   * 启动系统中的 Gallery
+   */
   public void openGallery() {
     Intent intent = createGalleryIntent();
     ((Activity) mContext).startActivityForResult(intent, REQUEST_CAPTURE_PHOTO_FROM_GALLERY);
   }
 
+  /**
+   * 在 onActivityResult 中调用
+   *
+   * @param requestCode 请求码
+   * @param resultCode 结果码
+   * @param callback 回调接口
+   */
   public void handleActivityResult(int requestCode, int resultCode, Intent data,
       Callback callback) {
     switch (requestCode) {
@@ -68,6 +78,9 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     }
   }
 
+  /**
+   * 解析 Uri
+   */
   private void parsePhotoUri(Uri uri) {
     Log.i(TAG, "parsePhotoUri -->>");
     Bundle args = new Bundle();
@@ -75,6 +88,12 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     ((Activity) mContext).getLoaderManager().initLoader(GALLERY_HUNTER_LOADER_ID, args, this);
   }
 
+  /**
+   * 创建 loader 查询图片的地址
+   *
+   * @param id loader 的编号
+   * @param args 参数
+   */
   @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
     Log.i(TAG, "onCreateLoader -->>");
     String[] projections = { MediaStore.Images.Media.DATA };
@@ -82,6 +101,9 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     return new CursorLoader(mContext, imageUri, projections, null, null, null);
   }
 
+  /**
+   * 查询结束后，得到图片的真实路径
+   */
   @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
     Log.i(TAG, "onLoadFinished -->>");
     if (cursor != null) {
@@ -100,6 +122,9 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     Log.i(TAG, "onLoaderReset -->>");
   }
 
+  /**
+   * 创建打开相册的 Intent
+   */
   private Intent createGalleryIntent() {
     Intent intent = new Intent(Intent.ACTION_PICK);
     intent.setType("image/*");

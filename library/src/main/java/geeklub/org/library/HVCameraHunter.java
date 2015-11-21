@@ -39,11 +39,21 @@ public class HVCameraHunter {
     this.mContext = context;
   }
 
+  /**
+   * 启动相机
+   */
   public void openCamera() {
     Intent intent = createCameraIntent();
     ((Activity) mContext).startActivityForResult(intent, REQUEST_TAKE_PHOTO);
   }
 
+  /**
+   * 在 onActivityResult 中调用
+   *
+   * @param requestCode 请求码
+   * @param resultCode 结果码
+   * @param callback 回调接口
+   */
   public void handleActivityResult(int requestCode, int resultCode, Callback callback) {
 
     switch (requestCode) {
@@ -59,6 +69,9 @@ public class HVCameraHunter {
     }
   }
 
+  /**
+   * 取消使用拍照的图片
+   */
   private void onCancelCapturePhoto(Callback callback) {
     try {
       File photoFile = getPhotoFile();
@@ -68,6 +81,11 @@ public class HVCameraHunter {
     }
   }
 
+  /**
+   *
+   *
+   * @param callback
+   */
   private void onCapturePhotoFromCamera(Callback callback) {
     try {
       File photoFile = getPhotoFile();
@@ -77,6 +95,11 @@ public class HVCameraHunter {
     }
   }
 
+  /**
+   * 创建启动 Camera 的 Intent
+   *
+   * @return Intent
+   */
   private Intent createCameraIntent() {
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     try {
@@ -88,24 +111,38 @@ public class HVCameraHunter {
     return intent;
   }
 
+  /**
+   * 创建保存图片的路径
+   *
+   * @throws IOException
+   */
   private Uri createCameraPictureFileUri() throws IOException {
     String timeStamp = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss").format(new Date());
     // 图片前缀
     String tempFilePrefix = "JPEG_" + timeStamp + "_";
     // 图片目录
     File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+    // 创建一个空文件
     File photoFile = File.createTempFile(tempFilePrefix, ".jpg", storageDir);
     Uri photoUri = Uri.fromFile(photoFile);
     savePhotoFileUri(photoUri);
     return photoUri;
   }
 
+  /**
+   * 将文件的 uri 保存到本地
+   */
   private void savePhotoFileUri(Uri fileUri) {
     SharedPreferences.Editor editor =
         PreferenceManager.getDefaultSharedPreferences(mContext).edit();
     editor.putString(TEMP_PHOTO_FILE_URI, fileUri.toString()).commit();
   }
 
+  /**
+   * 得到图片 File
+   *
+   * @throws URISyntaxException
+   */
   private File getPhotoFile() throws URISyntaxException {
     URI photoUri = new URI(
         PreferenceManager.getDefaultSharedPreferences(mContext).getString(TEMP_PHOTO_FILE_URI, ""));
@@ -113,6 +150,9 @@ public class HVCameraHunter {
     return new File(photoUri);
   }
 
+  /**
+   * 通知 Gallery 更新
+   */
   private void addPhotoToGallery(URI photoUri) {
     Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
     File file = new File(photoUri);
