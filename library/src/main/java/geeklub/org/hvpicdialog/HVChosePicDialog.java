@@ -1,4 +1,4 @@
-package geeklub.org.library;
+package geeklub.org.hvpicdialog;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import geeklub.org.library.R;
 
 /**
  * Created by HelloVass on 15/9/25.

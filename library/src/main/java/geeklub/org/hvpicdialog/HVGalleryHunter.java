@@ -1,4 +1,4 @@
-package geeklub.org.library;
+package geeklub.org.hvpicdialog;
 
 import android.app.Activity;
 import android.app.LoaderManager;

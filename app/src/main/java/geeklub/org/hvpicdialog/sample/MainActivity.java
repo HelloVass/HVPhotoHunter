@@ -1,4 +1,4 @@
-package geeklub.org.hvpicdialog;
+package geeklub.org.hvpicdialog.sample;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
-import geeklub.org.library.HVCameraHunter;
-import geeklub.org.library.HVChosePicDialog;
-import geeklub.org.library.HVGalleryHunter;
+import geeklub.org.hvpicdialog.HVCameraHunter;
+import geeklub.org.hvpicdialog.HVChosePicDialog;
+import geeklub.org.hvpicdialog.HVGalleryHunter;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
