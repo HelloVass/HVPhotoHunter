@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
+    Log.d(TAG, "onCreate -->>");
+
     setContentView(R.layout.activity_main);
 
     mCameraHunter = new HVCameraHunter(this);
@@ -40,27 +43,38 @@ public class MainActivity extends AppCompatActivity {
 
     findViewById(R.id.btn_show_dialog).setOnClickListener(new View.OnClickListener() {
       @Override public void onClick(View v) {
+        showHVDialog();
+      }
+    });
+  }
+
+  @Override protected void onResume() {
+    super.onResume();
+    Log.d(TAG, "onResume -->>");
+  }
+
+  @Override protected void onPause() {
+    super.onPause();
+    Log.d(TAG, "onPause -->>");
+  }
+
+  private void showHVDialog() {
+    Log.d(TAG, "showHVDialog -->>");
+    HVChosePicDialog dialog = new HVChosePicDialog();
+
+    dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
+      @Override public void chooseCamera() {
 
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
             Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-          showHVDialog();
+          mCameraHunter.openCamera();
         } else {
           ActivityCompat.requestPermissions(MainActivity.this,
               new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
               REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
         }
-      }
-    });
-  }
-
-  private void showHVDialog() {
-    HVChosePicDialog dialog = new HVChosePicDialog();
-
-    dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
-      @Override public void chooseCamera() {
-        mCameraHunter.openCamera();
       }
     });
 
@@ -74,12 +88,12 @@ public class MainActivity extends AppCompatActivity {
 
   @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
       int[] grantResults) {
+    Log.d(TAG, "onRequestPermissionsResult -->>");
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-        showHVDialog();
+        mCameraHunter.openCamera();
       } else {
         Toast.makeText(MainActivity.this, "permission denied, boo!", Toast.LENGTH_SHORT).show();
       }
@@ -130,10 +144,8 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-
-
   @Override protected void onStop() {
     super.onStop();
-    Log.i(TAG, "onStop -->>");
+    Log.d(TAG, "onStop -->>");
   }
 }
