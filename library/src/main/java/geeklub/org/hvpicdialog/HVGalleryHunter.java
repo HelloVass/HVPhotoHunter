@@ -22,12 +22,12 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
 
   private static final int GALLERY_HUNTER_LOADER_ID = 2333;
 
-  private Context mContext;
-
   public static final int REQUEST_CAPTURE_PHOTO_FROM_GALLERY = 33;
 
   private static final String EXTRAS_GALLERY_SELECTED_PHOTO_URI =
       "extras_gallery_selected_photo_uri";
+
+  private Context mContext;
 
   private Callback mCallback;
 

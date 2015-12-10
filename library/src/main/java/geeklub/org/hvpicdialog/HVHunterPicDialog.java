@@ -15,9 +15,9 @@ import geeklub.org.library.R;
  * Created by HelloVass on 15/9/25.
  */
 
-public class HVChosePicDialog extends DialogFragment {
+public class HVHunterPicDialog extends DialogFragment {
 
-  public final static String TAG = HVChosePicDialog.class.getSimpleName();
+  public final static String TAG = HVHunterPicDialog.class.getSimpleName();
 
   private ImageButton mCameraBtn;
 

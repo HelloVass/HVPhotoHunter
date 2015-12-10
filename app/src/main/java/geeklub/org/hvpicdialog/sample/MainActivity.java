@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import geeklub.org.hvpicdialog.HVCameraHunter;
-import geeklub.org.hvpicdialog.HVChosePicDialog;
+import geeklub.org.hvpicdialog.HVHunterPicDialog;
 import geeklub.org.hvpicdialog.HVGalleryHunter;
 import java.io.File;
 
@@ -60,9 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
   private void showHVDialog() {
     Log.d(TAG, "showHVDialog -->>");
-    HVChosePicDialog dialog = new HVChosePicDialog();
+    HVHunterPicDialog dialog = new HVHunterPicDialog();
 
-    dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
+    dialog.setOnChooseCameraListener(new HVHunterPicDialog.OnChooseCameraListener() {
       @Override public void chooseCamera() {
 
         int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
@@ -78,12 +78,12 @@ public class MainActivity extends AppCompatActivity {
       }
     });
 
-    dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
+    dialog.setOnChooseGalleryListener(new HVHunterPicDialog.OnChooseGalleryListener() {
       @Override public void chooseGallery() {
         mHVGalleryHunter.openGallery();
       }
     });
-    dialog.show(getSupportFragmentManager(), HVChosePicDialog.TAG);
+    dialog.show(getSupportFragmentManager(), HVHunterPicDialog.TAG);
   }
 
   @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
