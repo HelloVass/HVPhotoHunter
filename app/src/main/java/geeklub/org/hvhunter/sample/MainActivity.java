@@ -1,20 +1,21 @@
-package geeklub.org.hvpicdialog.sample;
+package geeklub.org.hvhunter.sample;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
-import geeklub.org.hvpicdialog.HVCameraHunter;
-import geeklub.org.hvpicdialog.HVHunterPicDialog;
-import geeklub.org.hvpicdialog.HVGalleryHunter;
+import geeklub.org.hvhunter.HVCameraHunter;
+import geeklub.org.hvhunter.HVGalleryHunter;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
   @Override protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-    Log.d(TAG, "onCreate -->>");
-
     setContentView(R.layout.activity_main);
 
     mCameraHunter = new HVCameraHunter(this);
@@ -48,46 +47,41 @@ public class MainActivity extends AppCompatActivity {
     });
   }
 
-  @Override protected void onResume() {
-    super.onResume();
-    Log.d(TAG, "onResume -->>");
-  }
-
-  @Override protected void onPause() {
-    super.onPause();
-    Log.d(TAG, "onPause -->>");
-  }
-
   private void showHVDialog() {
-    Log.d(TAG, "showHVDialog -->>");
-    HVHunterPicDialog dialog = new HVHunterPicDialog();
 
-    dialog.setOnChooseCameraListener(new HVHunterPicDialog.OnChooseCameraListener() {
-      @Override public void chooseCamera() {
+    new AlertDialog.Builder(this).setTitle("图片选择器")
+        .setItems(new String[] { "图库", "拍照" }, new DialogInterface.OnClickListener() {
+          @Override public void onClick(DialogInterface dialog, int which) {
 
-        int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            switch (which) {
+              case 0:
+                mHVGalleryHunter.openGallery();
+                break;
+              case 1:
+                int permissionCheck = ContextCompat.checkSelfPermission(MainActivity.this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-        if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
-          mCameraHunter.openCamera();
-        } else {
-          ActivityCompat.requestPermissions(MainActivity.this,
-              new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
-              REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
-        }
-      }
-    });
-
-    dialog.setOnChooseGalleryListener(new HVHunterPicDialog.OnChooseGalleryListener() {
-      @Override public void chooseGallery() {
-        mHVGalleryHunter.openGallery();
-      }
-    });
-    dialog.show(getSupportFragmentManager(), HVHunterPicDialog.TAG);
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                  mCameraHunter.openCamera();
+                } else {
+                  ActivityCompat.requestPermissions(MainActivity.this,
+                      new String[] { Manifest.permission.WRITE_EXTERNAL_STORAGE },
+                      REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION);
+                }
+                break;
+              default:
+                break;
+            }
+          }
+        })
+        .setCancelable(true)
+        .create()
+        .show();
   }
 
   @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
       int[] grantResults) {
+
     Log.d(TAG, "onRequestPermissionsResult -->>");
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
@@ -116,7 +110,9 @@ public class MainActivity extends AppCompatActivity {
           }
 
           @Override public void onCaptureSucceed(File imageFile) {
+
             Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+
             Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
           }
 
@@ -127,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void handleCameraResult(int requestCode, int resultCode) {
+
     mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
 
       @Override public void onCapturePhotoFailed(Exception e) {
@@ -134,7 +131,9 @@ public class MainActivity extends AppCompatActivity {
       }
 
       @Override public void onCaptureSucceed(File imageFile) {
+
         Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+
         Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
       }
 
@@ -142,10 +141,5 @@ public class MainActivity extends AppCompatActivity {
         Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
       }
     });
-  }
-
-  @Override protected void onStop() {
-    super.onStop();
-    Log.d(TAG, "onStop -->>");
   }
 }

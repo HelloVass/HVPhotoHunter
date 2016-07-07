@@ -1,4 +1,4 @@
-package geeklub.org.hvpicdialog;
+package geeklub.org.hvhunter;
 
 import org.junit.Test;
 
