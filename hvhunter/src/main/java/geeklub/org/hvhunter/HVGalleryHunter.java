@@ -111,8 +111,8 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
       cursor.moveToFirst();
       File filePath = new File(cursor.getString(imagePathColumnIndex));
       mCallback.onCaptureSucceed(filePath);
-      // 销毁当前这个 loader
-      ((Activity) mContext).getLoaderManager().destroyLoader(GALLERY_HUNTER_LOADER_ID);
+      ((Activity) mContext).getLoaderManager()
+          .destroyLoader(GALLERY_HUNTER_LOADER_ID); // 销毁当前这个 loader
     } else {
       mCallback.onCapturePhotoFailed(new NoSuchFieldException());
     }
