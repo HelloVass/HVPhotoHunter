@@ -35,8 +35,34 @@ public class MainActivity extends AppCompatActivity {
 
     setContentView(R.layout.activity_main);
 
-    mCameraHunter = new HVCameraHunter(this);
-    mHVGalleryHunter = new HVGalleryHunter(this);
+    mCameraHunter = new HVCameraHunter(this, new HVCameraHunter.Callback() {
+
+      @Override public void onSucceed(File imageFile) {
+        Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+      }
+
+      @Override public void onFailed(Exception error) {
+
+      }
+
+      @Override public void onCanceled() {
+
+      }
+    });
+    mHVGalleryHunter = new HVGalleryHunter(this, new HVGalleryHunter.Callback() {
+
+      @Override public void onSucceed(String imagePath) {
+        Glide.with(MainActivity.this).load(imagePath).centerCrop().into(mPhotoImageView);
+      }
+
+      @Override public void onFailed() {
+
+      }
+
+      @Override public void onCanceled() {
+        Log.i(TAG, "HVGalleryHunter onCanceled -->>");
+      }
+    });
 
     mPhotoImageView = (ImageView) findViewById(R.id.iv_photo);
 
@@ -82,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
   @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
       int[] grantResults) {
 
-    Log.d(TAG, "onRequestPermissionsResult -->>");
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     if (requestCode == REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION) {
@@ -97,49 +122,7 @@ public class MainActivity extends AppCompatActivity {
   @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
-    handleCameraResult(requestCode, resultCode);
-
-    handleGalleryResult(requestCode, resultCode, data);
-  }
-
-  private void handleGalleryResult(int requestCode, int resultCode, Intent data) {
-    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
-        new HVGalleryHunter.Callback() {
-          @Override public void onCapturePhotoFailed(Exception error) {
-
-          }
-
-          @Override public void onCaptureSucceed(File imageFile) {
-
-            Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-
-            Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
-          }
-
-          @Override public void onCanceled() {
-            Log.i(TAG, "HVGalleryHunter onCanceled -->>");
-          }
-        });
-  }
-
-  private void handleCameraResult(int requestCode, int resultCode) {
-
-    mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
-
-      @Override public void onCapturePhotoFailed(Exception e) {
-
-      }
-
-      @Override public void onCaptureSucceed(File imageFile) {
-
-        Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-
-        Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
-      }
-
-      @Override public void onCanceled(File imageFile) {
-        Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
-      }
-    });
+    mCameraHunter.handleActivityResult(requestCode, resultCode);
+    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data);
   }
 }

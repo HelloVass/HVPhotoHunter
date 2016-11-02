@@ -2,8 +2,8 @@ package geeklub.org.hvhunter;
 
 import android.app.Activity;
 import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -12,36 +12,30 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by HelloVass on 15/11/15.
  */
-public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
+public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<String> {
 
   private static final String TAG = HVGalleryHunter.class.getSimpleName();
 
-  private static final int GALLERY_HUNTER_LOADER_ID = 2333;
+  private static final int GALLERY_HUNTER_LOADER_ID = 23;
 
-  public static final int REQUEST_CAPTURE_PHOTO_FROM_GALLERY = 33;
+  private static final int REQUEST_CAPTURE_PHOTO_FROM_GALLERY = 33;
 
-  private static final String EXTRAS_GALLERY_SELECTED_PHOTO_URI =
-      "extras_gallery_selected_photo_uri";
+  private static final String[] PROJECTIONS = new String[] { MediaStore.Images.Media.DATA };
 
   private Context mContext;
 
   private Callback mCallback;
 
-  public interface Callback {
+  private Uri mUri;
 
-    void onCapturePhotoFailed(Exception error);
-
-    void onCaptureSucceed(File path);
-
-    void onCanceled();
-  }
-
-  public HVGalleryHunter(Context context) {
+  public HVGalleryHunter(Context context, Callback callback) {
     this.mContext = context;
+    this.mCallback = callback;
   }
 
   /**
@@ -53,27 +47,25 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
   }
 
   /**
-   * 在 onActivityResult 中调用
-   *
-   * @param requestCode 请求码
-   * @param resultCode 结果码
-   * @param callback 回调接口
+   * 在 Activity 中调用
    */
-  public void handleActivityResult(int requestCode, int resultCode, Intent data,
-      Callback callback) {
+  public void handleActivityResult(int requestCode, int resultCode, Intent data) {
+
     switch (requestCode) {
+
       case REQUEST_CAPTURE_PHOTO_FROM_GALLERY:
-        mCallback = callback;
+
         if (resultCode == Activity.RESULT_OK && data != null) {
-          Log.i(TAG, "data -->>" + data.toString());
-          Log.i(TAG, "data.getData() -->>" + data.getData().toString());
-          parsePhotoUri(data.getData());
-        } else if (resultCode == Activity.RESULT_CANCELED) {
+          parseArgs(data);
+          resetLoader();
+        } else if (resultCode == Activity.RESULT_CANCELED && mCallback != null) {
           mCallback.onCanceled();
         }
+
         break;
 
       default:
+
         break;
     }
   }
@@ -81,11 +73,15 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
   /**
    * 解析 Uri
    */
-  private void parsePhotoUri(Uri uri) {
-    Log.i(TAG, "parsePhotoUri -->>");
-    Bundle args = new Bundle();
-    args.putParcelable(EXTRAS_GALLERY_SELECTED_PHOTO_URI, uri);
-    ((Activity) mContext).getLoaderManager().initLoader(GALLERY_HUNTER_LOADER_ID, args, this);
+  private void parseArgs(Intent data) {
+    mUri = data.getData();
+  }
+
+  /**
+   * 重置 Loader
+   */
+  private void resetLoader() {
+    ((Activity) mContext).getLoaderManager().restartLoader(GALLERY_HUNTER_LOADER_ID, null, this);
   }
 
   /**
@@ -94,32 +90,30 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
    * @param id loader 的编号
    * @param args 参数
    */
-  @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-    Log.i(TAG, "onCreateLoader -->>");
-    String[] projections = { MediaStore.Images.Media.DATA };
-    Uri imageUri = args.getParcelable(EXTRAS_GALLERY_SELECTED_PHOTO_URI);
-    return new CursorLoader(mContext, imageUri, projections, null, null, null);
+  @Override public Loader<String> onCreateLoader(int id, Bundle args) {
+    return new GalleryLoader(mContext, mUri, PROJECTIONS);
   }
 
-  /**
-   * 查询结束后，得到图片的真实路径
-   */
-  @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-    Log.i(TAG, "onLoadFinished -->>");
-    if (cursor != null) {
-      int imagePathColumnIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-      cursor.moveToFirst();
-      File filePath = new File(cursor.getString(imagePathColumnIndex));
-      mCallback.onCaptureSucceed(filePath);
-      ((Activity) mContext).getLoaderManager()
-          .destroyLoader(GALLERY_HUNTER_LOADER_ID); // 销毁当前这个 loader
-    } else {
-      mCallback.onCapturePhotoFailed(new NoSuchFieldException());
+  @Override public void onLoadFinished(Loader<String> loader, String imagePath) {
+
+    if (imagePath != null && mCallback != null) {
+      mCallback.onSucceed(imagePath);
+    } else if (mCallback != null) {
+      mCallback.onFailed();
     }
   }
 
-  @Override public void onLoaderReset(Loader<Cursor> loader) {
-    Log.i(TAG, "onLoaderReset -->>");
+  @Override public void onLoaderReset(Loader<String> loader) {
+    Log.d(TAG, "onLoaderReset ===>>");
+  }
+
+  public interface Callback {
+
+    void onSucceed(String imagePath);
+
+    void onCanceled();
+
+    void onFailed();
   }
 
   /**
@@ -129,5 +123,99 @@ public class HVGalleryHunter implements LoaderManager.LoaderCallbacks<Cursor> {
     Intent intent = new Intent(Intent.ACTION_PICK);
     intent.setType("image/*");
     return intent;
+  }
+
+  private static class GalleryLoader extends AsyncTaskLoader<String> {
+
+    private String mImagePath;
+
+    private Uri mUri;
+
+    private String[] mProjections;
+
+    GalleryLoader(Context context, Uri uri, String[] projections) {
+      super(context);
+
+      mUri = uri;
+      mProjections = projections;
+    }
+
+    @Override public String loadInBackground() {
+
+      Cursor cursor = getContext().getContentResolver().query(mUri, mProjections, null, null, null);
+
+      String imagePath = null;
+
+      if (cursor != null) {
+
+        try {
+          cursor.moveToFirst();
+          imagePath = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
+          cursor.close();
+        }
+      }
+
+      return imagePath;
+    }
+
+    @Override public void deliverResult(String imagePath) {
+
+      if (isReset()) {
+        if (imagePath != null) {
+          onReleaseResources(imagePath);
+        }
+        return;
+      }
+
+      String oldImagePath = mImagePath;
+      mImagePath = imagePath;
+
+      if (isStarted()) {
+        super.deliverResult(imagePath);
+      }
+
+      if (oldImagePath != null) {
+        onReleaseResources(oldImagePath);
+      }
+    }
+
+    @Override protected void onStartLoading() {
+
+      if (mImagePath != null) {
+        deliverResult(mImagePath);
+      }
+
+      if (takeContentChanged() || mImagePath == null) {
+        forceLoad();
+      }
+    }
+
+    @Override protected void onStopLoading() {
+      cancelLoad();
+    }
+
+    @Override public void onCanceled(String imagePath) {
+      super.onCanceled(imagePath);
+
+      onReleaseResources(imagePath);
+    }
+
+    @Override protected void onReset() {
+      super.onReset();
+
+      onStopLoading();
+
+      if (mImagePath != null) {
+        onReleaseResources(mImagePath);
+        mImagePath = null;
+      }
+    }
+
+    private void onReleaseResources(String imagePath) {
+      //  do nothing
+    }
   }
 }

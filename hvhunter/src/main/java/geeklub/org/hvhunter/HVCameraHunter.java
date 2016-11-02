@@ -20,23 +20,26 @@ import java.util.Date;
  */
 public class HVCameraHunter {
 
+  private static final int REQUEST_TAKE_PHOTO = 34;
+
+  private static final String TEMP_PHOTO_FILE_URI = "temp_photo_file_uri";
+
   private Context mContext;
 
-  public static final int REQUEST_TAKE_PHOTO = 34;
-
-  public static final String TEMP_PHOTO_FILE_URI = "temp_photo_file_uri";
+  private Callback mCallback;
 
   public interface Callback {
 
-    void onCapturePhotoFailed(Exception error);
+    void onFailed(Exception error);
 
-    void onCaptureSucceed(File imageFile);
+    void onSucceed(File imageFile);
 
-    void onCanceled(File imageFile);
+    void onCanceled();
   }
 
-  public HVCameraHunter(Context context) {
+  public HVCameraHunter(Context context, Callback callback) {
     this.mContext = context;
+    this.mCallback = callback;
   }
 
   /**
@@ -49,49 +52,31 @@ public class HVCameraHunter {
 
   /**
    * 在 onActivityResult 中调用
-   *
-   * @param requestCode 请求码
-   * @param resultCode 结果码
-   * @param callback 回调接口
    */
-  public void handleActivityResult(int requestCode, int resultCode, Callback callback) {
+  public void handleActivityResult(int requestCode, int resultCode) {
 
     switch (requestCode) {
+
       case REQUEST_TAKE_PHOTO:
-        if (resultCode == Activity.RESULT_OK) {
-          onCapturePhotoFromCamera(callback);
-        } else if (resultCode == Activity.RESULT_CANCELED) {
-          onCancelCapturePhoto(callback);
+
+        if (resultCode == Activity.RESULT_OK && mCallback != null) {
+
+          try {
+            File photoFile = getPhotoFile();
+            mCallback.onSucceed(photoFile);
+          } catch (URISyntaxException e) {
+            mCallback.onFailed(e);
+          }
+
+        } else if (resultCode == Activity.RESULT_CANCELED && mCallback != null) {
+          mCallback.onCanceled();
         }
+
         break;
+
       default:
+
         break;
-    }
-  }
-
-  /**
-   * 取消使用拍照的图片
-   */
-  private void onCancelCapturePhoto(Callback callback) {
-    try {
-      File photoFile = getPhotoFile();
-      callback.onCanceled(photoFile);
-    } catch (URISyntaxException e) {
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   *
-   *
-   * @param callback
-   */
-  private void onCapturePhotoFromCamera(Callback callback) {
-    try {
-      File photoFile = getPhotoFile();
-      callback.onCaptureSucceed(photoFile);
-    } catch (URISyntaxException e) {
-      callback.onCapturePhotoFailed(e);
     }
   }
 
