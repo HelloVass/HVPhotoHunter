@@ -3,88 +3,116 @@
 一个**选取图片** Material Design 风格的 Dialog，参考了 [EasyImage](https://github.com/jkwiecien/EasyImage) 这个项目。
 
 ## 功能
+
 - 从相册中选取图片
 - 拍照获取图片
 
-## 截图
-<img src="/screenshot/device-2015-11-16-184918.png" width="320px"/>
+## 演示
 
-## 如何使用
+### 从相册中获取图片
 
-### 打开相册
+<img src="/screenshot/相册中获取图片.gif" width="320px"/>
 
+### 拍照获取图片
 
-```java
-// 构建 HVGalleryHunter 的实例
-mHVGalleryHunter = new HVGalleryHunter(this);
-
-dialog.setOnChooseGalleryListener(new HVChosePicDialog.OnChooseGalleryListener() {
-          @Override public void chooseGallery() {
-            mHVGalleryHunter.openGallery();
-          }
-        });
-```
+<img src="/screenshot/拍照获取图片.gif" width="320px"/>
 
 
 
+## 使用
 
-### 拍照
+### 从相册获取图片
 
-```java
-// 构建 HVCameraHunter 的实例
-mCameraHunter = new HVCameraHunter(this);
+#### Setp1
 
-dialog.setOnChooseCameraListener(new HVChosePicDialog.OnChooseCameraListener() {
-          @Override public void chooseCamera() {
-            mCameraHunter.openCamera();
-          }
-        });
-```
+构建 HVGalleryHunter 的实例
 
+``` java
 
-### 获得图片 File
+    mCameraHunter = new HVCameraHunter(this, new HVCameraHunter.Callback() {
 
-```java
-// 在 onActivityResult 方法中得到 File
-@Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    // 捕获拍照的结果
-    mCameraHunter.handleActivityResult(requestCode, resultCode, new HVCameraHunter.Callback() {
-
-      @Override public void onCapturePhotoFailed(Exception e) {
-
-      }
-
-      @Override public void onCaptureSucceed(File imageFile) {
-        Log.i(TAG, "CameraHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
+      @Override public void onSucceed(File imageFile) {
         Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
       }
 
-      @Override public void onCanceled(File imageFile) {
-        Log.i(TAG, "CameraHunter onCanceled -->>" + imageFile.getAbsolutePath());
+      @Override public void onFailed(Exception error) {
+
+      }
+
+      @Override public void onCanceled() {
+
       }
     });
-    // 捕获相册返回的结果
-    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data,
-        new HVGalleryHunter.Callback() {
-          @Override public void onCapturePhotoFailed(Exception error) {
-
-          }
-
-          @Override public void onCaptureSucceed(File imageFile) {
-            Log.i(TAG, "HVGalleryHunter onCaptureSucceed -->>" + imageFile.getAbsolutePath());
-            Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
-          }
-
-          @Override public void onCanceled() {
-            Log.i(TAG, "HVGalleryHunter onCanceled -->>");
-          }
-        });
-  }
-
 
 ```
+
+#### Step2
+
+重写 `onActivityResult` 方法
+
+``` java
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data);
+
+  }
+
+```
+
+#### Step3
+
+在适当的位置，调用 `HVGalleryHunter` 的 `openGallery()` 方法，具体参见 Demo 中的栗子。
+
+### 使用相机获取图片
+
+#### Step1
+
+创建 HVCameraHunter 的实例
+
+``` java
+
+    mCameraHunter = new HVCameraHunter(this, new HVCameraHunter.Callback() {
+
+      @Override public void onSucceed(File imageFile) {
+        Glide.with(MainActivity.this).load(imageFile).centerCrop().into(mPhotoImageView);
+      }
+
+      @Override public void onFailed(Exception error) {
+
+      }
+
+      @Override public void onCanceled() {
+
+      }
+    });
+
+```
+
+
+
+
+#### Step2
+
+重写 `onActivityResult` 方法
+
+``` java
+
+  @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    mHVGalleryHunter.handleActivityResult(requestCode, resultCode, data);
+
+    mCameraHunter.handleActivityResult(requestCode, resultCode);
+  }
+
+```
+
+#### Step3
+
+在适当的位置，调用 `HVCameraHunter` 的 `openCamera()` 方法，具体参见 Demo 中的栗子。
+
 
 
 
