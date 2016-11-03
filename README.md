@@ -11,11 +11,11 @@
 
 ### 从相册中获取图片
 
-<img src="/screenshot/相册中获取图片.gif" width="320px"/>
+<img src="/screenshot/相册中获取图片.gif" />
 
 ### 拍照获取图片
 
-<img src="/screenshot/拍照获取图片.gif" width="320px"/>
+<img src="/screenshot/拍照获取图片.gif" />
 
 
 
